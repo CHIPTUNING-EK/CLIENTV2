@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ChipTuningGarage · журнал работ</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ChipTuning">
+<meta name="theme-color" content="#0E1116">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23F2A516'/%3E%3Ctext x='50' y='68' font-family='Arial' font-weight='bold' font-size='46' text-anchor='middle' fill='%231a1205'%3ECG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Saira+Condensed:wght@500;600;700&family=Saira:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1116;--panel:#161B22;--panel-2:#1C232C;
+    --amber:#F2A516;--text:#E8E4D9;--muted:#8A929C;
+    --line:rgba(255,255,255,0.09);--line-strong:rgba(255,255,255,0.18);
+    --danger:#E0563E;--green:#46E07F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:radial-gradient(120% 80% at 50% -10%,#1a222c 0%,var(--ink) 55%) fixed;
+    color:var(--text);font-family:"Saira",system-ui,sans-serif;line-height:1.5;min-height:100vh;padding:20px 16px 56px}
+  .wrap{max-width:920px;margin:0 auto}
+
+  header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .logo{width:42px;height:42px;border-radius:10px;flex:none;background:linear-gradient(145deg,var(--amber),#c47f0a);
+    display:flex;align-items:center;justify-content:center;font-family:"Saira Condensed",sans-serif;font-weight:700;
+    font-size:22px;color:#1a1205;box-shadow:0 0 20px rgba(242,165,22,.25)}
+  .brand{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;font-weight:700;
+    font-size:clamp(22px,5.5vw,30px);letter-spacing:.02em;line-height:1}
+  .brand .g{color:var(--amber)}
+  .brand small{display:block;font-family:"JetBrains Mono",monospace;text-transform:none;font-weight:400;
+    font-size:11px;letter-spacing:.08em;color:var(--muted);margin-top:4px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card + .card{margin-top:16px}
+  .card-title{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.16em;
+    font-size:12px;color:var(--muted);font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
+  .card-title b{color:var(--amber);font-family:"JetBrains Mono",monospace;letter-spacing:0;font-weight:700}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:560px){.form-grid{grid-template-columns:1fr}}
+  .fld{display:flex;flex-direction:column;gap:6px}
+  .fld.full{grid-column:1/-1}
+  .fld label{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;
+    font-size:11px;color:var(--muted);font-weight:600}
+  .inp{font-family:"JetBrains Mono",monospace;font-size:15px;background:var(--panel-2);color:var(--text);
+    border:1px solid var(--line);border-radius:9px;padding:11px 12px;width:100%}
+  .inp:focus{outline:none;border-color:var(--amber)}
+  .inp.err{border-color:var(--danger)}
+  textarea.inp{font-family:"Saira",sans-serif;resize:vertical;min-height:64px;line-height:1.5}
+  #num{text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+
+  .btn{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-weight:700;
+    font-size:15px;border:0;border-radius:10px;padding:13px 20px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent}
+  .btn-add{background:var(--amber);color:#1a1205;width:100%;margin-top:14px}
+  .btn-add:hover{filter:brightness(1.06)}
+  .btn-ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--line-strong);font-size:13px;padding:10px 14px}
+  .btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
+
+  .totbar{display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--panel-2);
+    border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin-bottom:12px}
+  .totbar .k{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--muted);font-weight:600}
+  .totbar .v{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:24px;color:var(--green)}
+  .months{display:flex;flex-direction:column;gap:8px}
+  .mrow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+  .mrow .ml{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.03em}
+  .mrow .mc{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted)}
+  .mrow .mv{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--amber)}
+  .mright{display:flex;align-items:center;gap:14px}
+
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .search{flex:1;min-width:160px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--panel-2);
+    color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
+  .search:focus{outline:none;border-color:var(--amber)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  thead th{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:11px;
+    color:var(--muted);font-weight:600;text-align:left;padding:8px 8px;border-bottom:1px solid var(--line-strong)}
+  tbody td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+  .c-num{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--amber);white-space:nowrap}
+  .c-date{font-family:"JetBrains Mono",monospace;color:var(--muted);white-space:nowrap}
+  .c-idx{font-family:"JetBrains Mono",monospace;color:var(--muted)}
+  .c-sum{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--green);white-space:nowrap;text-align:right}
+  a.tel{color:var(--text);text-decoration:none;font-family:"JetBrains Mono",monospace;white-space:nowrap}
+  a.tel:hover{color:var(--amber)}
+  .del{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;width:28px;height:28px;
+    cursor:pointer;font-size:14px;line-height:1;transition:.14s}
+  .del:hover{border-color:var(--danger);color:var(--danger)}
+  .empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
+
+  @media (max-width:680px){
+    table,thead,tbody,tr,th,td{display:block}
+    thead{display:none}
+    tbody tr{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:8px 12px;margin-bottom:10px}
+    tbody td{border:0;padding:5px 0;display:flex;justify-content:space-between;gap:14px}
+    tbody td::before{content:attr(data-label);font-family:"Saira Condensed",sans-serif;text-transform:uppercase;
+      letter-spacing:.1em;font-size:10px;color:var(--muted);font-weight:600;flex:none;padding-top:2px}
+    td.c-work{flex-direction:column;align-items:flex-start;gap:2px}
+    td.c-sum{text-align:left}
+    td.actions{justify-content:flex-end}
+    td.actions::before{content:""}
+  }
+
+  .statusbar{display:flex;align-items:center;gap:8px;margin-top:14px;font-family:"JetBrains Mono",monospace;font-size:12px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:.2s}
+  .dot.bad{background:var(--danger);box-shadow:0 0 8px var(--danger)}
+  #saveTxt{color:var(--muted)}
+
+  details.backup{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  details.backup summary{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.14em;
+    font-size:12px;color:var(--muted);cursor:pointer;list-style:none;font-weight:600}
+  details.backup summary::-webkit-details-marker{display:none}
+  details.backup summary::after{content:" +";color:var(--amber)}
+  details.backup[open] summary::after{content:" −"}
+  .bk-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .bk-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+  #bkText{width:100%;margin-top:10px;min-height:80px;font-family:"JetBrains Mono",monospace;font-size:11px;
+    background:var(--panel-2);color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:10px;resize:vertical}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">CG</div>
+    <div class="brand">Chip<span class="g">Tuning</span>Garage<small>журнал работ · база клиентов</small></div>
+  </header>
+
+  <!-- ФОРМА -->
+  <div class="card">
+    <div class="card-title">Новая запись</div>
+    <div class="form-grid">
+      <div class="fld"><label>Гос. номер</label><input class="inp" id="num" placeholder="A777AA152" autocomplete="off"></div>
+      <div class="fld"><label>Дата обращения</label><input class="inp" id="date" type="date"></div>
+      <div class="fld"><label>Марка</label><input class="inp" id="brand" placeholder="Volkswagen" autocomplete="off"></div>
+      <div class="fld"><label>Модель</label><input class="inp" id="model" placeholder="Passat B6" autocomplete="off"></div>
+      <div class="fld"><label>Телефон</label><input class="inp" id="phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="off"></div>
+      <div class="fld"><label>Сумма, ₽</label><input class="inp" id="amount" type="number" inputmode="numeric" min="0" step="100" placeholder="0"></div>
+      <div class="fld full"><label>Выполненная работа</label><textarea class="inp" id="work" placeholder="Stage 1, отключение EGR, калибровка..."></textarea></div>
+    </div>
+    <button class="btn btn-add" id="addBtn">+ Добавить</button>
+  </div>
+
+  <!-- ИТОГИ -->
+  <div class="card">
+    <div class="card-title">Итоги по месяцам</div>
+    <div class="totbar"><span class="k">Всего за всё время</span><span class="v" id="grandTotal">0 ₽</span></div>
+    <div class="months" id="months"></div>
+  </div>
+
+  <!-- БАЗА -->
+  <div class="card">
+    <div class="card-title">База записей <b id="count">0</b></div>
+    <div class="toolbar"><input class="search" id="search" placeholder="Поиск: номер, марка, модель, телефон…"></div>
+    <table>
+      <thead><tr><th>№</th><th>Дата</th><th>Номер</th><th>Марка</th><th>Модель</th><th>Телефон</th><th>Работа</th><th>Сумма</th><th></th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty">База пуста — добавь первую запись.</div>
+
+    <div class="statusbar"><span class="dot" id="dot"></span><span id="saveTxt">автосохранение</span></div>
+
+    <details class="backup">
+      <summary>Бэкап и перенос базы</summary>
+      <div class="bk-row">
+        <button class="btn btn-ghost" id="expBtn">⧉ Скопировать бэкап</button>
+        <button class="btn btn-ghost" id="impBtn">⤓ Загрузить из текста</button>
+      </div>
+      <p class="bk-hint">Бэкап — текст с базой. Скопируй и сохрани в Заметках/почте. Чтобы перенести или восстановить: вставь текст в поле ниже и нажми «Загрузить».</p>
+      <textarea id="bkText" placeholder="Сюда попадёт бэкап при копировании — или вставь сохранённый, чтобы восстановить базу."></textarea>
+    </details>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const KEY='ctg_db';
+  let records=[];
+  const hasStore = (typeof window!=='undefined' && window.storage && typeof window.storage.get==='function');
+
+  async function loadDB(){
+    if(hasStore){ try{const r=await window.storage.get(KEY);return r&&r.value?JSON.parse(r.value):[];}catch(e){return [];} }
+    try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):[];}catch(e){return [];}
+  }
+  async function saveDB(){
+    const data=JSON.stringify(records);
+    try{
+      if(hasStore){await window.storage.set(KEY,data);} else {localStorage.setItem(KEY,data);}
+      flag(true);
+    }catch(e){flag(false);}
+  }
+  let flagT;
+  function flag(ok){
+    const dot=$('dot'),txt=$('saveTxt');
+    dot.classList.toggle('bad',!ok);
+    txt.textContent=ok?'сохранено ✓':'не сохранилось — сделай бэкап';
+    txt.style.color=ok?'var(--green)':'var(--danger)';
+    clearTimeout(flagT);
+    flagT=setTimeout(()=>{txt.textContent='автосохранение';txt.style.color='var(--muted)';},1800);
+  }
+
+  (function(){const d=new Date(),p=n=>String(n).padStart(2,'0');
+    $('date').value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());})();
+
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const fmtDate=iso=>{if(!iso)return '—';const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
+  const rub=n=>(Number(n)||0).toLocaleString('ru-RU')+' ₽';
+  function plural(n){const a=n%10,b=n%100;if(a===1&&b!==11)return 'работа';if(a>=2&&a<=4&&(b<10||b>=20))return 'работы';return 'работ';}
+
+  $('num').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
+
+  function renderMonths(){
+    const map={};
+    records.forEach(r=>{const k=(r.date||'').slice(0,7);if(!k)return;if(!map[k])map[k]={n:0,sum:0};map[k].n++;map[k].sum+=Number(r.amount)||0;});
+    const keys=Object.keys(map).sort().reverse();
+    const box=$('months');box.innerHTML='';
+    if(!keys.length)box.innerHTML='<div class="empty" style="padding:12px">Пока нет данных за месяцы.</div>';
+    keys.forEach(k=>{const[y,m]=k.split('-');const o=map[k];const row=document.createElement('div');row.className='mrow';
+      row.innerHTML='<span class="ml">'+MONTHS[+m-1]+' '+y+'</span><span class="mright"><span class="mc">'+o.n+' '+plural(o.n)+'</span><span class="mv">'+rub(o.sum)+'</span></span>';
+      box.appendChild(row);});
+    $('grandTotal').textContent=rub(records.reduce((s,r)=>s+(Number(r.amount)||0),0));
+  }
+
+  function render(){
+    const q=$('search').value.trim().toLowerCase();
+    const list=records.filter(r=>!q||(r.num+' '+r.brand+' '+r.model+' '+(r.phone||'')).toLowerCase().includes(q));
+    const tb=$('tbody');tb.innerHTML='';
+    $('count').textContent=records.length;
+    $('empty').style.display=list.length?'none':'block';
+    $('empty').textContent=(!list.length&&q)?'Ничего не найдено по запросу.':'База пуста — добавь первую запись.';
+    list.forEach(r=>{
+      const i=records.indexOf(r);
+      const phoneCell=r.phone?('<a class="tel" href="tel:'+esc(r.phone.replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a>'):'—';
+      const tr=document.createElement('tr');
+      tr.innerHTML='<td class="c-idx" data-label="№">'+(i+1)+'</td>'+
+        '<td class="c-date" data-label="Дата">'+fmtDate(r.date)+'</td>'+
+        '<td class="c-num" data-label="Номер">'+esc(r.num)+'</td>'+
+        '<td data-label="Марка">'+esc(r.brand||'—')+'</td>'+
+        '<td data-label="Модель">'+esc(r.model||'—')+'</td>'+
+        '<td data-label="Телефон">'+phoneCell+'</td>'+
+        '<td class="c-work" data-label="Работа">'+esc(r.work||'—').replace(/\n/g,'<br>')+'</td>'+
+        '<td class="c-sum" data-label="Сумма">'+rub(r.amount)+'</td>'+
+        '<td class="actions"><button class="del" data-i="'+i+'" title="Удалить">✕</button></td>';
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll('.del').forEach(b=>b.addEventListener('click',()=>{
+      const i=+b.dataset.i;
+      if(confirm('Удалить запись '+(records[i].num||'')+'?')){records.splice(i,1);render();renderMonths();saveDB();}
+    }));
+  }
+
+  $('addBtn').addEventListener('click',()=>{
+    const num=$('num').value.trim();
+    if(!num){$('num').classList.add('err');$('num').focus();setTimeout(()=>$('num').classList.remove('err'),1200);return;}
+    records.push({num:num,date:$('date').value,brand:$('brand').value.trim(),model:$('model').value.trim(),
+      phone:$('phone').value.trim(),amount:parseFloat($('amount').value)||0,work:$('work').value.trim()});
+    ['num','brand','model','phone','amount','work'].forEach(id=>$(id).value='');
+    $('num').focus();render();renderMonths();saveDB();
+  });
+
+  $('search').addEventListener('input',render);
+
+  // бэкап
+  $('expBtn').addEventListener('click',async()=>{
+    const data=JSON.stringify(records);
+    $('bkText').value=data;
+    try{await navigator.clipboard.writeText(data);alert('Бэкап скопирован в буфер. Сохрани его в Заметках или отправь себе.');}
+    catch(e){$('bkText').focus();$('bkText').select();alert('Бэкап в поле ниже — выдели и скопируй вручную.');}
+  });
+  $('impBtn').addEventListener('click',()=>{
+    const t=$('bkText').value.trim();
+    if(!t){alert('Вставь текст бэкапа в поле ниже.');return;}
+    let arr;try{arr=JSON.parse(t);}catch(e){alert('Не похоже на бэкап — проверь текст.');return;}
+    if(!Array.isArray(arr)){alert('Не похоже на бэкап — проверь текст.');return;}
+    if(!confirm('Загрузить '+arr.length+' записей? Текущая база будет заменена.'))return;
+    records=arr;render();renderMonths();saveDB();
+    alert('База загружена: '+arr.length+' записей.');
+  });
+
+  // старт
+  (async()=>{records=await loadDB();render();renderMonths();})();
+})();
+</script>
+</body>
+</html>
