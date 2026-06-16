@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>ChipTuningGarage · журнал работ</title>
+<title>ChipTuningGarage · очередь и учёт</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ChipTuning">
@@ -13,136 +13,184 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Saira+Condensed:wght@500;600;700&family=Saira:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#0E1116;--panel:#161B22;--panel-2:#1C232C;--amber:#F2A516;--text:#E8E4D9;--muted:#8A929C;
-    --line:rgba(255,255,255,0.09);--line-strong:rgba(255,255,255,0.18);--danger:#E0563E;--green:#46E07F;
-    --blue:#5FB0E8;--violet:#B98BE0}
+  :root{--ink:#0E1116;--panel:#161B22;--panel-2:#1C232C;--amber:#F2A516;--amber-ink:#1a1205;
+    --text:#E8E4D9;--muted:#8A929C;--line:rgba(255,255,255,0.09);--line-strong:rgba(255,255,255,0.18);
+    --danger:#E0563E;--green:#46E07F;--blue:#5FB0E8}
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{background:radial-gradient(120% 80% at 50% -10%,#1a222c 0%,var(--ink) 55%) fixed;color:var(--text);
     font-family:"Saira",system-ui,sans-serif;line-height:1.5;min-height:100vh;padding:20px 16px 56px}
-  .wrap{max-width:880px;margin:0 auto}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .wrap{max-width:560px;margin:0 auto}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
   .logo{width:42px;height:42px;border-radius:10px;flex:none;background:linear-gradient(145deg,var(--amber),#c47f0a);
     display:flex;align-items:center;justify-content:center;font-family:"Saira Condensed",sans-serif;font-weight:700;
-    font-size:22px;color:#1a1205;box-shadow:0 0 20px rgba(242,165,22,.25)}
+    font-size:22px;color:var(--amber-ink);box-shadow:0 0 20px rgba(242,165,22,.25)}
   .brand{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;font-weight:700;
-    font-size:clamp(22px,5.5vw,30px);letter-spacing:.02em;line-height:1}
+    font-size:clamp(20px,5.5vw,28px);letter-spacing:.02em;line-height:1}
   .brand .g{color:var(--amber)}
   .brand small{display:block;font-family:"JetBrains Mono",monospace;text-transform:none;font-weight:400;
     font-size:11px;letter-spacing:.08em;color:var(--muted);margin-top:4px}
-
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
   .card + .card{margin-top:16px}
   .card-title{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.16em;font-size:12px;
     color:var(--muted);font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline}
   .card-title b{color:var(--amber);font-family:"JetBrains Mono",monospace;letter-spacing:0;font-weight:700}
 
-  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:560px){.form-grid{grid-template-columns:1fr}}
-  .fld{display:flex;flex-direction:column;gap:6px}
-  .fld.full{grid-column:1/-1}
-  .fld label{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:11px;
-    color:var(--muted);font-weight:600}
+  @keyframes blink{50%{opacity:.35}}
+  #alerts{margin-bottom:16px;display:none;flex-direction:column;gap:8px}
+  .alert{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:11px;font-size:13px;font-weight:500}
+  .alert .ic{font-size:16px}
+  .alert.warn{background:rgba(242,165,22,.12);border:1px solid rgba(242,165,22,.4);color:var(--amber)}
+  .alert.urgent{background:rgba(224,86,62,.14);border:1px solid rgba(224,86,62,.5);color:var(--danger)}
+  .alert.urgent .ic{animation:blink 1s infinite}
+
+  .mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .mtitle{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.05em;font-weight:700;font-size:17px}
+  .navb{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text);border-radius:9px;width:40px;height:36px;
+    font-size:18px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent}
+  .navb:hover{border-color:var(--amber);color:var(--amber)}
+  .navb:disabled{opacity:.3;cursor:default}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:13px 10px;text-align:center}
+  .stat .k{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:10px;color:var(--muted);font-weight:600}
+  .stat .v{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:17px;margin-top:4px}
+  .stat.inc .v{color:var(--green)}.stat.exp .v{color:var(--danger)}.stat.pro .v{color:var(--amber)}
+  .mdone{text-align:center;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-top:10px}
+
+  .badge{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .badge.queue{background:rgba(95,176,232,.16);color:var(--blue)}
+  .badge.work{background:rgba(242,165,22,.16);color:var(--amber)}
+  .tbadge{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap}
+  .tbadge.chip{background:rgba(242,165,22,.16);color:var(--amber)}
+  .tbadge.diag{background:rgba(95,176,232,.16);color:var(--blue)}
+  .tbadge.elec{background:rgba(185,139,224,.16);color:#B98BE0}
+  select.inp{appearance:none;-webkit-appearance:none;padding-right:34px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238A929C' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center}
+  #chipBlock{margin-bottom:12px;padding:14px;border:1px dashed var(--line-strong);border-radius:11px;display:none}
+  .due{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted)}
+  .due b{color:var(--amber)}
+  .search{width:100%;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--panel-2);color:var(--text);
+    border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:12px}
+  .search:focus{outline:none;border-color:var(--amber)}
+  .btn-new{margin-top:12px;width:100%;font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;
+    font-weight:700;font-size:13px;background:var(--amber);color:var(--amber-ink);border:0;border-radius:9px;padding:11px;cursor:pointer}
+  .btn-new:hover{filter:brightness(1.06)}
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .wday{border:1px solid var(--line);border-radius:10px;padding:7px 2px;text-align:center;cursor:pointer;position:relative;transition:.12s;-webkit-tap-highlight-color:transparent}
+  .wday:hover{border-color:var(--line-strong)}
+  .wday .dn{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;font-size:9px;color:var(--muted);letter-spacing:.04em}
+  .wday .dd{font-family:"JetBrains Mono",monospace;font-size:15px;font-weight:500;margin-top:2px}
+  .wday.today{border-color:var(--amber)}
+  .wday.sel{background:var(--amber);border-color:var(--amber)}
+  .wday.sel .dn,.wday.sel .dd{color:var(--amber-ink)}
+  .wday .dots{display:flex;gap:2px;justify-content:center;margin-top:3px;min-height:6px}
+  .dot-s{width:5px;height:5px;border-radius:50%}
+  .day-list{margin-top:14px}
+  .day-empty{color:var(--muted);font-size:13px;padding:6px 0}
+  .dl-item{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;border-top:1px solid var(--line)}
+  .dl-item:first-child{border-top:0}
+  .dl-time{font-family:"JetBrains Mono",monospace;color:var(--muted);min-width:42px}
+  .q-sub{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-top:4px}
+  .base-actions{display:flex;gap:8px;margin-top:12px}
+  .base-actions .btn-new{margin-top:0;flex:1}
+  .base-edit{flex:1;font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;font-weight:700;
+    font-size:13px;background:var(--panel-2);color:var(--text);border:1px solid var(--line-strong);border-radius:9px;padding:11px;cursor:pointer}
+  .base-edit:hover{border-color:var(--amber);color:var(--amber)}
+
+  .q{padding:14px;border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+  .q.work{border-color:rgba(242,165,22,.4)}
+  .q-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .q-car{font-weight:600;font-size:15px}
+  .q-plate{font-family:"JetBrains Mono",monospace;color:var(--amber);font-weight:700;text-transform:uppercase}
+  .q-when{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-left:auto}
+  .q-vin{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-top:4px}
+  .prep-box{margin-top:10px;padding:10px 12px;border-radius:9px;background:rgba(95,176,232,.1);border:1px solid rgba(95,176,232,.3);font-size:13px}
+  .prep-box b{color:var(--blue)}
+
+  .work-block{margin-top:12px;padding:12px;border:1px dashed var(--line-strong);border-radius:11px}
+  .wb-title{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:11px;color:var(--muted);font-weight:600;margin:6px 0}
+  .wrow{display:flex;gap:8px;margin-bottom:8px}
+  .wrow .inp:first-child{flex:1}
+  .wrow .inp.wp,.wrow .inp.ea{width:96px;text-align:right}
+  .rrow{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;width:40px;flex:none;cursor:pointer;transition:.14s}
+  .rrow:hover{border-color:var(--danger);color:var(--danger)}
+  .addrow{background:transparent;border:1px dashed var(--line-strong);color:var(--muted);border-radius:8px;padding:8px;width:100%;
+    font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:13px;cursor:pointer;transition:.14s;margin-bottom:6px}
+  .addrow:hover{border-color:var(--amber);color:var(--amber)}
+  .wb-sum{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--text);margin-top:8px;text-align:right}
+
+  .q-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+  .act{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.06em;font-weight:700;font-size:13px;
+    border:0;border-radius:9px;padding:10px 14px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent}
+  .act-work{background:var(--amber);color:var(--amber-ink)}
+  .act-done{background:var(--green);color:#06210f}
+  .act-cal{background:rgba(95,176,232,.15);color:var(--blue)}
+  .act-edit{background:var(--panel-2);border:1px solid var(--line-strong);color:var(--text)}
+  .act-edit:hover{border-color:var(--amber);color:var(--amber)}
+  .act-del{background:transparent;border:1px solid var(--line);color:var(--muted);margin-left:auto}
+  .act-del:hover{border-color:var(--danger);color:var(--danger)}
+  .act:hover{filter:brightness(1.06)}
+
+  .fld{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+  .fld label{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.12em;font-size:11px;color:var(--muted);font-weight:600}
   .inp{font-family:"JetBrains Mono",monospace;font-size:15px;background:var(--panel-2);color:var(--text);
     border:1px solid var(--line);border-radius:9px;padding:11px 12px;width:100%}
   .inp:focus{outline:none;border-color:var(--amber)}
   .inp.err{border-color:var(--danger)}
-  select.inp{appearance:none;-webkit-appearance:none;padding-right:34px;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238A929C' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
-    background-repeat:no-repeat;background-position:right 12px center}
-  #num{text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-
+  .inp::placeholder{color:rgba(138,146,156,.4)}
+  .inp:placeholder-shown{border-color:rgba(224,86,62,.5)}
+  .inp:not(:placeholder-shown){border-color:rgba(70,224,127,.5)}
+  .inp:focus{border-color:var(--amber)}
+  textarea.inp{font-family:"Saira",sans-serif;resize:vertical;min-height:60px;line-height:1.5}
+  #plate,#vin{text-transform:uppercase;font-weight:700;letter-spacing:.04em}
+  .seg{display:flex;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:6px}
+  .seg button{flex:1;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.04em;color:var(--muted);
+    background:transparent;border:0;border-radius:8px;padding:10px 6px;cursor:pointer;transition:.16s;-webkit-tap-highlight-color:transparent}
+  .seg button.on{background:var(--amber);color:var(--amber-ink)}
+  #prepBlock{margin-bottom:12px;padding:14px;border:1px dashed var(--line-strong);border-radius:11px;display:none}
+  #editNote{display:none;background:rgba(242,165,22,.1);border:1px solid rgba(242,165,22,.4);color:var(--amber);
+    border-radius:9px;padding:8px 12px;font-size:12px;margin-bottom:12px;font-family:"JetBrains Mono",monospace}
   .btn{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-weight:700;font-size:15px;
-    border:0;border-radius:10px;padding:13px 20px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent}
-  .btn-add{background:var(--amber);color:#1a1205;width:100%;margin-top:14px}
+    border:0;border-radius:10px;padding:14px 20px;cursor:pointer;transition:.14s;-webkit-tap-highlight-color:transparent;width:100%}
+  .btn-add{background:var(--amber);color:var(--amber-ink)}
   .btn-add:hover{filter:brightness(1.06)}
-  .btn-ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--line-strong);font-size:13px;padding:10px 14px}
+  .btn-cancel{background:transparent;border:1px solid var(--line-strong);color:var(--muted);margin-top:8px;display:none}
+  .btn-cancel:hover{border-color:var(--danger);color:var(--danger)}
+  .btn-ghost{background:var(--panel-2);color:var(--text);border:1px solid var(--line-strong);font-size:13px;padding:10px 14px;width:auto}
   .btn-ghost:hover{border-color:var(--amber);color:var(--amber)}
 
-  /* сегментированный выбор типа */
-  .seg{display:flex;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:6px}
-  .seg button{flex:1;font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:14px;letter-spacing:.04em;
-    color:var(--muted);background:transparent;border:0;border-radius:8px;padding:10px 6px;cursor:pointer;transition:.16s;
-    -webkit-tap-highlight-color:transparent}
-  .seg button.on{background:var(--amber);color:#1a1205}
-  .seg button[data-t="diag"].on{background:var(--blue);color:#06243a}
-  .seg button[data-t="elec"].on{background:var(--violet);color:#2a1240}
+  .empty{text-align:center;color:var(--muted);padding:20px 10px;font-size:14px}
+  .base-row{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .base-row.warranty{border-color:rgba(224,86,62,.55);box-shadow:0 0 0 1px rgba(224,86,62,.25)}
+  .base-row.done-ok{border-color:rgba(70,224,127,.45)}
+  .base-vin{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);font-weight:400}
+  .base-sum{display:flex;align-items:center;gap:10px;padding:11px 13px;cursor:pointer}
+  .base-sum:hover{background:rgba(255,255,255,.02)}
+  .base-date{font-family:"JetBrains Mono",monospace;color:var(--muted);font-size:13px;min-width:74px}
+  .base-car{flex:1;font-weight:600;font-size:14px}
+  .base-car .pl{font-family:"JetBrains Mono",monospace;color:var(--amber);font-size:12px}
+  .base-chev{color:var(--muted);transition:.2s}
+  .base-row.open .base-chev{transform:rotate(90deg)}
+  .base-detail{display:none;padding:0 13px 13px}
+  .base-row.open .base-detail{display:block}
+  .dd-row{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line);font-family:"JetBrains Mono",monospace;font-size:13px}
+  .dd-row span{color:var(--muted);font-family:"Saira",sans-serif}
+  .dd-block{font-size:12.5px;color:var(--muted);padding:6px 0;border-top:1px solid var(--line);white-space:pre-wrap}
+  .inc{color:var(--green)}.exp{color:var(--danger)}.pro{color:var(--amber)}
 
-  /* блок chiptuning */
-  #chipBlock{margin-top:12px;padding:14px;border:1px dashed var(--line-strong);border-radius:11px}
-  .due{margin-top:12px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
-  .due b{color:var(--amber)}
-
-  /* работы */
-  .work-row{display:flex;gap:8px;margin-bottom:8px}
-  .work-row .wd{flex:1}
-  .work-row .wp{width:110px;text-align:right}
-  .wdel{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;width:42px;flex:none;
-    cursor:pointer;font-size:14px;transition:.14s}
-  .wdel:hover{border-color:var(--danger);color:var(--danger)}
-  .works-total{display:flex;justify-content:space-between;align-items:center;margin-top:6px;
-    font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:12px;color:var(--muted)}
-  .works-total b{font-family:"JetBrains Mono",monospace;font-size:17px;color:var(--green);letter-spacing:0}
-
-  /* итоги */
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-  .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:13px 12px;text-align:center}
-  .stat .k{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.1em;font-size:10px;color:var(--muted);font-weight:600}
-  .stat .v{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:18px;margin-top:4px}
-  .stat.inc .v{color:var(--green)}.stat.exp .v{color:var(--danger)}.stat.pro .v{color:var(--amber)}
-  .months{display:flex;flex-direction:column;gap:8px}
-  .mrow{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:9px;gap:12px}
-  .mrow .ml{font-family:"Saira Condensed",sans-serif;font-weight:600;font-size:15px;letter-spacing:.03em}
-  .mrow .mc{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);display:block}
-  .mrow .mv{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--green);text-align:right}
-
-  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-  .search{flex:1;min-width:160px;font-family:"JetBrains Mono",monospace;font-size:14px;background:var(--panel-2);
-    color:var(--text);border:1px solid var(--line);border-radius:9px;padding:10px 12px}
-  .search:focus{outline:none;border-color:var(--amber)}
-
-  /* карточки записей */
-  #list{display:flex;flex-direction:column;gap:12px}
-  .rec{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px}
-  .rec-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .rec-num{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:18px;color:var(--amber);letter-spacing:.04em}
-  .badge{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:11px;font-weight:600;
-    padding:3px 9px;border-radius:7px}
-  .badge.chip{background:rgba(242,165,22,.16);color:var(--amber)}
-  .badge.diag{background:rgba(95,176,232,.16);color:var(--blue)}
-  .badge.elec{background:rgba(185,139,224,.16);color:var(--violet)}
-  .rec-date{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);margin-left:auto}
-  .rec-due{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--amber)}
-  .rec-del{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:7px;width:28px;height:28px;
-    cursor:pointer;font-size:13px;transition:.14s;flex:none}
-  .rec-del:hover{border-color:var(--danger);color:var(--danger)}
-  .rec-car{margin-top:8px;font-size:14px}
-  .rec-car a{color:var(--text);text-decoration:none;font-family:"JetBrains Mono",monospace}
-  .rec-car a:hover{color:var(--amber)}
-  .rec-specs{margin-top:6px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted)}
-  .rec-works{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
-  .rec-works .wi{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:14px}
-  .rec-works .wi span:last-child{font-family:"JetBrains Mono",monospace;color:var(--text);white-space:nowrap}
-  .rec-foot{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;border-top:1px solid var(--line);padding-top:10px;
-    font-family:"JetBrains Mono",monospace;font-size:13px}
-  .rec-foot .lbl{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-family:"Saira Condensed",sans-serif}
-  .rec-foot b{font-weight:700;margin-left:6px}
-  .rec-foot .inc b{color:var(--green)}.rec-foot .exp b{color:var(--danger)}.rec-foot .pro b{color:var(--amber)}
-  .empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
-
-  .statusbar{display:flex;align-items:center;gap:8px;margin-top:14px;font-family:"JetBrains Mono",monospace;font-size:12px}
+  .statusbar{display:flex;align-items:center;gap:8px;font-family:"JetBrains Mono",monospace;font-size:12px}
   .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);transition:.2s}
   .dot.bad{background:var(--danger);box-shadow:0 0 8px var(--danger)}
   #saveTxt{color:var(--muted)}
-  details.backup{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
   details.backup summary{font-family:"Saira Condensed",sans-serif;text-transform:uppercase;letter-spacing:.14em;font-size:12px;
     color:var(--muted);cursor:pointer;list-style:none;font-weight:600}
   details.backup summary::-webkit-details-marker{display:none}
   details.backup summary::after{content:" +";color:var(--amber)}
   details.backup[open] summary::after{content:" −"}
-  .bk-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .bk-rowb{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
   .bk-hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
-  #bkText{width:100%;margin-top:10px;min-height:80px;font-family:"JetBrains Mono",monospace;font-size:11px;
+  #bkText{width:100%;margin-top:10px;min-height:70px;font-family:"JetBrains Mono",monospace;font-size:11px;
     background:var(--panel-2);color:var(--muted);border:1px solid var(--line);border-radius:9px;padding:10px;resize:vertical}
 </style>
 </head>
@@ -150,81 +198,100 @@
 <div class="wrap">
   <header>
     <div class="logo">CG</div>
-    <div class="brand">Chip<span class="g">Tuning</span>Garage<small>журнал работ · база клиентов</small></div>
+    <div class="brand">Chip<span class="g">Tuning</span>Garage<small>очередь · работы · учёт</small></div>
   </header>
 
-  <!-- ФОРМА -->
+  <div id="alerts"></div>
+
+  <!-- НЕДЕЛЯ -->
   <div class="card">
-    <div class="card-title">Новая запись</div>
-    <div class="form-grid">
-      <div class="fld"><label>Гос. номер</label><input class="inp" id="num" placeholder="A777AA152" autocomplete="off"></div>
-      <div class="fld"><label>Дата обращения</label><input class="inp" id="date" type="date"></div>
-
-      <div class="fld full">
-        <label>Тип работ</label>
-        <div class="seg" id="typeSeg">
-          <button type="button" data-t="chip" class="on">Чип</button>
-          <button type="button" data-t="diag">Диагностика</button>
-          <button type="button" data-t="elec">Электрика</button>
-        </div>
-      </div>
-
-      <div class="fld"><label>Марка</label><input class="inp" id="brand" placeholder="Volkswagen" autocomplete="off"></div>
-      <div class="fld"><label>Модель</label><input class="inp" id="model" placeholder="Passat B6" autocomplete="off"></div>
-
-      <div class="full" id="chipBlock">
-        <div class="form-grid">
-          <div class="fld"><label>ЭБУ</label><input class="inp" id="ecu" placeholder="Bosch MED17.5.2" autocomplete="off"></div>
-          <div class="fld"><label>Объём двигателя, л</label><input class="inp" id="engvol" placeholder="1.8" autocomplete="off"></div>
-          <div class="fld"><label>Мощность, л.с.</label><input class="inp" id="power" type="number" inputmode="numeric" placeholder="180"></div>
-          <div class="fld"><label>Топливо</label>
-            <select class="inp" id="fuel"><option>Бензин</option><option>Дизель</option><option>Газ</option><option>Электро</option></select>
-          </div>
-        </div>
-        <div class="due">Гарантия / действует до: <b id="dueEcho">—</b> <span>(дата обращения + 15 дней)</span></div>
-      </div>
-
-      <div class="fld full"><label>Телефон</label><input class="inp" id="phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="off"></div>
-
-      <div class="fld full">
-        <label>Выполненная работа</label>
-        <div id="worksForm"></div>
-        <button type="button" class="btn btn-ghost" id="addWorkBtn">+ ещё работа</button>
-        <div class="works-total">Сумма работ <b id="worksTotal">0 ₽</b></div>
-      </div>
-
-      <div class="fld full"><label>Расход (запчасти, материалы), ₽</label><input class="inp" id="expense" type="number" inputmode="numeric" min="0" step="100" placeholder="0"></div>
+    <div class="mhead">
+      <button class="navb" id="prevW">‹</button>
+      <span class="mtitle" id="weekTitle">—</span>
+      <button class="navb" id="nextW">›</button>
     </div>
-    <button class="btn btn-add" id="addBtn">+ Добавить запись</button>
+    <div class="week" id="week"></div>
+    <div class="day-list" id="dayList"></div>
   </div>
 
-  <!-- ИТОГИ -->
+  <!-- ОЧЕРЕДЬ -->
   <div class="card">
-    <div class="card-title">Итоги</div>
+    <div class="card-title">Очередь <b id="qCount">0</b></div>
+    <div id="queue"></div>
+  </div>
+
+  <!-- НОВАЯ ЗАПИСЬ -->
+  <div class="card">
+    <div class="card-title" id="formTitle">Новая запись</div>
+    <div id="editNote"></div>
+    <div class="fld"><label>Дата обращения</label><input class="inp" id="date" type="date"></div>
+    <div class="fld"><label>Время обращения</label><input class="inp" id="time" type="time"></div>
+    <div class="fld"><label>Марка</label><input class="inp" id="brand" placeholder="Volkswagen" autocomplete="off"></div>
+    <div class="fld"><label>Модель</label><input class="inp" id="model" placeholder="Passat B6" autocomplete="off"></div>
+    <div class="fld"><label>Гос. номер</label><input class="inp" id="plate" placeholder="A777AA152" autocomplete="off"></div>
+    <div class="fld"><label>VIN</label><input class="inp" id="vin" placeholder="XW8ZZZ61ZJG000000" autocomplete="off"></div>
+    <div class="fld"><label>Имя владельца</label><input class="inp" id="owner" placeholder="Иван" autocomplete="off"></div>
+    <div class="fld"><label>Тип работ</label>
+      <div class="seg" id="typeSeg">
+        <button type="button" data-t="chip" class="on">Чип</button>
+        <button type="button" data-t="diag">Диагностика</button>
+        <button type="button" data-t="elec">Электрика</button>
+      </div>
+    </div>
+    <div id="chipBlock">
+      <div class="fld"><label>ЭБУ</label><input class="inp" id="ecu" placeholder="Bosch MED17.5.2" autocomplete="off"></div>
+      <div class="fld"><label>Объём двигателя, л</label><input class="inp" id="engvol" placeholder="1.8" autocomplete="off"></div>
+      <div class="fld"><label>Мощность, л.с.</label><input class="inp" id="power" type="number" inputmode="numeric" placeholder="180"></div>
+      <div class="fld" style="margin-bottom:0"><label>Топливо</label>
+        <select class="inp" id="fuel"><option>Бензин</option><option>Дизель</option><option>Газ</option><option>Электро</option></select>
+      </div>
+    </div>
+    <div class="fld"><label>Требуется подготовка?</label>
+      <div class="seg" id="prepSeg">
+        <button type="button" data-p="no" class="on">Нет</button>
+        <button type="button" data-p="yes">Да</button>
+      </div>
+    </div>
+    <div id="prepBlock">
+      <div class="fld" style="margin-bottom:0"><label>Что подготовить</label><textarea class="inp" id="prepInfo" placeholder="Заказать прошивку, снять ЭБУ заранее, подготовить стенд..."></textarea></div>
+    </div>
+    <button class="btn btn-add" id="addBtn">+ Добавить в очередь</button>
+    <button class="btn btn-cancel" id="cancelEdit">Отмена</button>
+  </div>
+
+  <!-- ИТОГИ ПО МЕСЯЦАМ -->
+  <div class="card">
+    <div class="mhead">
+      <button class="navb" id="prevMo">‹</button>
+      <span class="mtitle" id="moTitle">—</span>
+      <button class="navb" id="nextMo">›</button>
+    </div>
     <div class="stats">
       <div class="stat inc"><div class="k">Доход</div><div class="v" id="tInc">0 ₽</div></div>
       <div class="stat exp"><div class="k">Расход</div><div class="v" id="tExp">0 ₽</div></div>
       <div class="stat pro"><div class="k">Прибыль</div><div class="v" id="tPro">0 ₽</div></div>
     </div>
-    <div class="months" id="months"></div>
+    <div class="mdone" id="mDone">Выполнено: 0</div>
   </div>
 
-  <!-- БАЗА -->
+  <!-- БАЗА ВЫПОЛНЕННЫХ -->
   <div class="card">
-    <div class="card-title">База записей <b id="count">0</b></div>
-    <div class="toolbar"><input class="search" id="search" placeholder="Поиск: номер, марка, модель, телефон…"></div>
-    <div id="list"></div>
-    <div class="empty" id="empty">База пуста — добавь первую запись.</div>
+    <div class="card-title">База выполненных <b id="baseCount">0</b></div>
+    <input class="search" id="baseSearch" placeholder="Поиск: марка, модель, номер, VIN…">
+    <div id="baseList"></div>
+  </div>
 
+  <!-- БЭКАП -->
+  <div class="card">
     <div class="statusbar"><span class="dot" id="dot"></span><span id="saveTxt">автосохранение</span></div>
-    <details class="backup">
-      <summary>Бэкап и перенос базы</summary>
-      <div class="bk-row">
+    <details class="backup" style="margin-top:12px">
+      <summary>Бэкап и перенос данных</summary>
+      <div class="bk-rowb">
         <button class="btn btn-ghost" id="expBtn">⧉ Скопировать бэкап</button>
         <button class="btn btn-ghost" id="impBtn">⤓ Загрузить из текста</button>
       </div>
-      <p class="bk-hint">Скопируй бэкап и сохрани в Заметках/почте. Чтобы перенести или восстановить — вставь текст ниже и нажми «Загрузить».</p>
-      <textarea id="bkText" placeholder="Сюда попадёт бэкап при копировании — или вставь сохранённый, чтобы восстановить базу."></textarea>
+      <p class="bk-hint">Скопируй бэкап и сохрани. Чтобы перенести/восстановить — вставь текст ниже и нажми «Загрузить».</p>
+      <textarea id="bkText" placeholder="Сюда попадёт бэкап — или вставь сохранённый, чтобы восстановить."></textarea>
     </details>
   </div>
 </div>
@@ -232,154 +299,320 @@
 <script>
 (function(){
   const $=id=>document.getElementById(id);
-  const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  const TYPES={chip:'Чип',diag:'Диагностика',elec:'Электрика'};
+  const MN=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   const KEY='ctg_db';
-  let records=[], curType='chip';
+  let recs=[], prepNeeded=false, editingId=null;
   const hasStore=(typeof window!=='undefined'&&window.storage&&typeof window.storage.get==='function');
 
-  function normalize(arr){
-    return (arr||[]).map(r=>{
-      if(!r.works){ r.works = (r.work||r.amount) ? [{d:r.work||'',p:Number(r.amount)||0}] : []; }
-      if(!r.type) r.type='chip';
-      if(r.expense==null) r.expense=0;
-      return r;
-    });
+  const p2=n=>String(n).padStart(2,'0');
+  const isoOf=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+  const today=new Date(); today.setHours(0,0,0,0); const todayISO=isoOf(today);
+  let moY=today.getFullYear(), moM=today.getMonth();
+  const backLimit=new Date(today.getFullYear(),today.getMonth()-11,1);
+  const fwdLimit=new Date(today.getFullYear(),today.getMonth()+2,1);
+  function mondayOf(d){const x=new Date(d);x.setHours(0,0,0,0);const dw=(x.getDay()+6)%7;x.setDate(x.getDate()-dw);return x;}
+  let weekStart=mondayOf(new Date()), selected=todayISO;
+  const DOW=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const MG=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  const SCOL={queue:'#5FB0E8',work:'#F2A516',done:'#46E07F'};
+
+  const fmtDate=iso=>{if(!iso)return '—';const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
+  const rub=n=>(Math.round(Number(n)||0)).toLocaleString('ru-RU')+' ₽';
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const car=r=>[r.brand,r.model].filter(Boolean).join(' ');
+  const byId=id=>recs.find(r=>String(r.id)===String(id));
+  const worksSum=r=>(r.works||[]).reduce((s,w)=>s+(Number(w.p)||0),0);
+  const expsSum=r=>(r.exps||[]).reduce((s,e)=>s+(Number(e.a)||0),0);
+  const incomeOf=r=>r.status==='done'?worksSum(r):0;
+  const expenseOf=r=>r.status==='done'?expsSum(r):0;
+  const TYPES={chip:'Чип',diag:'Диагностика',elec:'Электрика'};
+  let curType='chip';
+  function addDays(iso,n){if(!iso)return '';const dt=new Date(iso+'T00:00:00');dt.setDate(dt.getDate()+n);return isoOf(dt);}
+  function updateDue(){}
+  function chipSpecs(r){if(r.type!=='chip')return '';const sp=[];
+    if(r.ecu)sp.push('ЭБУ '+r.ecu);if(r.engvol)sp.push(r.engvol+' л');if(r.power)sp.push(r.power+' л.с.');if(r.fuel)sp.push(r.fuel);
+    return sp.join(' · ');}
+  function fmtDT(dt){return p2(dt.getDate())+'.'+p2(dt.getMonth()+1)+'.'+dt.getFullYear()+' '+p2(dt.getHours())+':'+p2(dt.getMinutes());}
+  function warrantyEndDT(r){if(r.type!=='chip')return null;const base=r.doneDate||r.date;if(!base)return null;
+    const dt=new Date(base+'T'+(r.doneTime||r.time||'10:00'));dt.setDate(dt.getDate()+15);return dt;}
+  const onWarranty=r=>{const w=warrantyEndDT(r);return !!w&&new Date()<=w;};
+
+  function normalize(arr){return (arr||[]).map(r=>{
+    if(!r.id)r.id=Date.now()+Math.floor(Math.random()*1000);
+    if(!r.status)r.status='done';
+    if(!r.plate&&r.num)r.plate=r.num;
+    if(!Array.isArray(r.works)){r.works=(r.work||r.amount)?[{d:r.work||'',p:Number(r.amount)||0}]:[];}
+    if(!Array.isArray(r.exps)){r.exps=(r.expense||r.otherExp)?[{d:'расход',a:Number(r.expense||r.otherExp)||0}]:[];}
+    if(r.prepNeeded==null)r.prepNeeded=false;if(r.prepInfo==null)r.prepInfo='';
+    if(!r.type)r.type='chip';
+    if(r.status==='done'&&!r.doneDate){r.doneDate=r.date;r.doneTime=r.time||'';}
+    return r;});}
+
+  async function loadDB(){let a=[];
+    if(hasStore){try{const r=await window.storage.get(KEY);a=r&&r.value?JSON.parse(r.value):[];}catch(e){a=[];}}
+    else{try{const s=localStorage.getItem(KEY);a=s?JSON.parse(s):[];}catch(e){a=[];}}
+    a=normalize(a);const ya=new Date(today);ya.setFullYear(ya.getFullYear()-1);const yaISO=isoOf(ya);
+    return a.filter(r=>!r.date||r.date>=yaISO);
   }
-  async function loadDB(){
-    if(hasStore){try{const r=await window.storage.get(KEY);return normalize(r&&r.value?JSON.parse(r.value):[]);}catch(e){return [];}}
-    try{const s=localStorage.getItem(KEY);return normalize(s?JSON.parse(s):[]);}catch(e){return [];}
-  }
-  async function saveDB(){
-    const data=JSON.stringify(records);
-    try{ if(hasStore){await window.storage.set(KEY,data);}else{localStorage.setItem(KEY,data);} flag(true);}catch(e){flag(false);}
-  }
-  let flagT;
-  function flag(ok){const dot=$('dot'),txt=$('saveTxt');dot.classList.toggle('bad',!ok);
+  async function saveDB(){const data=JSON.stringify(recs);
+    try{if(hasStore){await window.storage.set(KEY,data);}else{localStorage.setItem(KEY,data);}flag(true);}catch(e){flag(false);}}
+  let flagT;function flag(ok){const dot=$('dot'),txt=$('saveTxt');dot.classList.toggle('bad',!ok);
     txt.textContent=ok?'сохранено ✓':'не сохранилось — сделай бэкап';txt.style.color=ok?'var(--green)':'var(--danger)';
     clearTimeout(flagT);flagT=setTimeout(()=>{txt.textContent='автосохранение';txt.style.color='var(--muted)';},1800);}
 
-  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const fmtDate=iso=>{if(!iso)return '—';const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;};
-  const rub=n=>(Number(n)||0).toLocaleString('ru-RU')+' ₽';
-  const income=r=>(r.works||[]).reduce((s,w)=>s+(Number(w.p)||0),0);
-  function addDays(iso,n){if(!iso)return '';const dt=new Date(iso+'T00:00:00');dt.setDate(dt.getDate()+n);
-    const p=x=>String(x).padStart(2,'0');return dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate());}
-  function plural(n){const a=n%10,b=n%100;if(a===1&&b!==11)return 'запись';if(a>=2&&a<=4&&(b<10||b>=20))return 'записи';return 'записей';}
-
-  (function(){const d=new Date(),p=n=>String(n).padStart(2,'0');
-    $('date').value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());})();
-
-  $('num').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
-
-  // тип работ
-  function updateDue(){$('dueEcho').textContent=curType==='chip'?fmtDate(addDays($('date').value,15)):'—';}
-  document.querySelectorAll('#typeSeg button').forEach(b=>b.addEventListener('click',()=>{
-    document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');curType=b.dataset.t;
-    $('chipBlock').style.display=curType==='chip'?'block':'none';updateDue();
-  }));
-  $('date').addEventListener('input',updateDue);
-
-  // работы
-  const worksForm=$('worksForm');
-  function recalcWorks(){let t=0;worksForm.querySelectorAll('.work-row').forEach(r=>{t+=parseFloat(r.querySelector('.wp').value)||0;});
-    $('worksTotal').textContent=rub(t);}
-  function addWorkRow(d,p){
-    const row=document.createElement('div');row.className='work-row';
-    row.innerHTML='<input class="inp wd" placeholder="Например: Stage 1" autocomplete="off">'+
-      '<input class="inp wp" type="number" inputmode="numeric" min="0" step="100" placeholder="₽">'+
-      '<button type="button" class="wdel" title="Убрать">✕</button>';
-    if(d)row.querySelector('.wd').value=d;
-    if(p!=null&&p!=='')row.querySelector('.wp').value=p;
-    row.querySelector('.wdel').addEventListener('click',()=>{row.remove();if(!worksForm.children.length)addWorkRow();recalcWorks();});
-    row.querySelectorAll('input').forEach(i=>i.addEventListener('input',recalcWorks));
-    worksForm.appendChild(row);recalcWorks();
+  function renderAlerts(){
+    const now=new Date();const items=[];
+    recs.forEach(r=>{if(r.prepNeeded&&r.status!=='done'&&r.date){
+      const dt=new Date(r.date+'T'+(r.time||'10:00'));const hrs=(dt-now)/36e5;
+      if(hrs<=48){const label=(car(r)||'Авто')+(r.plate?' '+r.plate:'');
+        items.push({u:hrs<=24?1:0,t:label+' — '+fmtDate(r.date)+(r.time?' '+r.time:'')+'. Подготовка: '+(r.prepInfo||'требуется')});}
+    }});
+    items.sort((a,b)=>b.u-a.u);const box=$('alerts');
+    box.innerHTML=items.map(it=>'<div class="alert '+(it.u?'urgent':'warn')+'"><span class="ic">🔧</span><span>'+esc(it.t)+'</span></div>').join('');
+    box.style.display=items.length?'flex':'none';
   }
-  $('addWorkBtn').addEventListener('click',()=>addWorkRow());
-  addWorkRow();
 
-  // рендер итогов
-  function renderMonths(){
-    const map={};
-    records.forEach(r=>{const k=(r.date||'').slice(0,7);if(!k)return;if(!map[k])map[k]={n:0,inc:0,exp:0};
-      map[k].n++;map[k].inc+=income(r);map[k].exp+=Number(r.expense)||0;});
-    const keys=Object.keys(map).sort().reverse();const box=$('months');box.innerHTML='';
-    if(!keys.length)box.innerHTML='<div class="empty" style="padding:12px">Пока нет данных за месяцы.</div>';
-    keys.forEach(k=>{const[y,m]=k.split('-');const o=map[k];const row=document.createElement('div');row.className='mrow';
-      row.innerHTML='<div><span class="ml">'+MONTHS[+m-1]+' '+y+'</span><span class="mc">'+o.n+' '+plural(o.n)+' · расход '+rub(o.exp)+'</span></div>'+
-        '<span class="mv">+'+rub(o.inc)+'</span>';box.appendChild(row);});
-    let inc=0,exp=0;records.forEach(r=>{inc+=income(r);exp+=Number(r.expense)||0;});
+  function renderMonth(){
+    $('moTitle').textContent=MN[moM]+' '+moY;
+    $('prevMo').disabled=(new Date(moY,moM,1)<=backLimit);$('nextMo').disabled=(new Date(moY,moM,1)>=fwdLimit);
+    let inc=0,exp=0,n=0;
+    recs.forEach(r=>{const a=(r.date||'').split('-');if(+a[0]===moY&&+a[1]===moM+1&&r.status==='done'){
+      inc+=incomeOf(r);exp+=expenseOf(r);n++;}});
     $('tInc').textContent=rub(inc);$('tExp').textContent=rub(exp);
     $('tPro').textContent=rub(inc-exp);$('tPro').style.color=(inc-exp)<0?'var(--danger)':'var(--amber)';
+    $('mDone').textContent='Выполнено: '+n;
   }
 
-  function render(){
-    const q=$('search').value.trim().toLowerCase();
-    const list=records.filter(r=>!q||(r.num+' '+(r.brand||'')+' '+(r.model||'')+' '+(r.phone||'')).toLowerCase().includes(q));
-    const box=$('list');box.innerHTML='';
-    $('count').textContent=records.length;
-    $('empty').style.display=list.length?'none':'block';
-    $('empty').textContent=(!list.length&&q)?'Ничего не найдено по запросу.':'База пуста — добавь первую запись.';
-    list.forEach(r=>{
-      const i=records.indexOf(r);const inc=income(r),exp=Number(r.expense)||0;
-      const phone=r.phone?('<a href="tel:'+esc(r.phone.replace(/[^\d+]/g,''))+'">'+esc(r.phone)+'</a>'):'';
-      let html='<div class="rec-head"><span class="rec-num">'+esc(r.num)+'</span>'+
-        '<span class="badge '+r.type+'">'+(TYPES[r.type]||'')+'</span>';
-      if(r.type==='chip'&&r.due)html+='<span class="rec-due">до '+fmtDate(r.due)+'</span>';
-      html+='<span class="rec-date">'+fmtDate(r.date)+'</span>'+
-        '<button class="rec-del" data-i="'+i+'" title="Удалить">✕</button></div>';
-      const carParts=[esc(r.brand||''),esc(r.model||'')].filter(Boolean).join(' ');
-      if(carParts||phone)html+='<div class="rec-car">'+carParts+(carParts&&phone?' · ':'')+phone+'</div>';
-      if(r.type==='chip'){
-        const sp=[];if(r.ecu)sp.push('ЭБУ '+esc(r.ecu));if(r.engvol)sp.push(esc(r.engvol)+' л');
-        if(r.power)sp.push(esc(r.power)+' л.с.');if(r.fuel)sp.push(esc(r.fuel));
-        if(sp.length)html+='<div class="rec-specs">'+sp.join(' · ')+'</div>';
-      }
-      if((r.works||[]).length){html+='<div class="rec-works">';
-        r.works.forEach(w=>{html+='<div class="wi"><span>'+esc(w.d||'—')+'</span><span>'+rub(w.p)+'</span></div>';});
-        html+='</div>';}
-      html+='<div class="rec-foot"><span class="inc"><span class="lbl">Сумма</span><b>'+rub(inc)+'</b></span>'+
-        '<span class="exp"><span class="lbl">Расход</span><b>'+rub(exp)+'</b></span>'+
-        '<span class="pro"><span class="lbl">Прибыль</span><b style="color:'+((inc-exp)<0?'var(--danger)':'var(--amber)')+'">'+rub(inc-exp)+'</b></span></div>';
-      const card=document.createElement('div');card.className='rec';card.innerHTML=html;box.appendChild(card);
-    });
-    box.querySelectorAll('.rec-del').forEach(b=>b.addEventListener('click',()=>{
-      const i=+b.dataset.i;if(confirm('Удалить запись '+(records[i].num||'')+'?')){records.splice(i,1);render();renderMonths();saveDB();}
-    }));
+  function workBlock(r){
+    let h='<div class="work-block"><div class="wb-title">Выполненные работы</div>';
+    (r.works||[]).forEach((w,i)=>{h+='<div class="wrow">'+
+      '<input class="inp wd" data-id="'+r.id+'" data-i="'+i+'" placeholder="Stage 1, чип-тюнинг..." value="'+esc(w.d)+'">'+
+      '<input class="inp wp" data-id="'+r.id+'" data-i="'+i+'" type="number" inputmode="numeric" value="'+(w.p||'')+'" placeholder="₽">'+
+      '<button class="rrow wdel" data-id="'+r.id+'" data-i="'+i+'">✕</button></div>';});
+    h+='<button class="addrow waddw" data-id="'+r.id+'">+ работа</button>';
+    h+='<div class="wb-title">Расходы</div>';
+    (r.exps||[]).forEach((e,i)=>{h+='<div class="wrow">'+
+      '<input class="inp ed" data-id="'+r.id+'" data-i="'+i+'" placeholder="Запчасть, материал..." value="'+esc(e.d)+'">'+
+      '<input class="inp ea" data-id="'+r.id+'" data-i="'+i+'" type="number" inputmode="numeric" value="'+(e.a||'')+'" placeholder="₽">'+
+      '<button class="rrow edel" data-id="'+r.id+'" data-i="'+i+'">✕</button></div>';});
+    h+='<button class="addrow wadde" data-id="'+r.id+'">+ расход</button>';
+    h+='<div class="wb-sum" data-id="'+r.id+'">Доход '+rub(worksSum(r))+' · Расход '+rub(expsSum(r))+' · Прибыль '+rub(worksSum(r)-expsSum(r))+'</div></div>';
+    return h;
   }
+
+  function renderQueue(){
+    const box=$('queue');const list=recs.filter(r=>r.status!=='done')
+      .sort((a,b)=>((a.date||'')+(a.time||'')).localeCompare((b.date||'')+(b.time||'')));
+    $('qCount').textContent=list.length;
+    if(!list.length){box.innerHTML='<div class="empty">Очередь пуста. Добавь запись ниже.</div>';return;}
+    box.innerHTML='';
+    list.forEach(r=>{
+      const el=document.createElement('div');el.className='q'+(r.status==='work'?' work':'');
+      let h='<div class="q-head"><span class="q-car">'+(esc(car(r))||'Авто')+(r.plate?' <span class="q-plate">'+esc(r.plate)+'</span>':'')+'</span>'+
+        '<span class="tbadge '+r.type+'">'+TYPES[r.type]+'</span>'+
+        '<span class="badge '+r.status+'">'+(r.status==='work'?'В работе':'Очередь')+'</span>'+
+        '<span class="q-when">'+fmtDate(r.date)+(r.time?' '+r.time:'')+'</span></div>';
+      if(r.vin)h+='<div class="q-vin">VIN: '+esc(r.vin)+'</div>';
+      if(r.type==='chip'){const sp=chipSpecs(r);if(sp)h+='<div class="q-vin">'+esc(sp)+'</div>';}
+      if(r.owner)h+='<div class="q-sub">'+esc(r.owner)+'</div>';
+      if(r.prepNeeded)h+='<div class="prep-box"><b>🔧 Подготовка:</b> '+(esc(r.prepInfo)||'требуется')+'</div>';
+      if(r.status==='work')h+=workBlock(r);
+      h+='<div class="q-actions">';
+      if(r.status==='queue')h+='<button class="act act-work" data-id="'+r.id+'">▶ Взять в работу</button>';
+      if(r.status==='work')h+='<button class="act act-done" data-id="'+r.id+'">✓ Выполнено</button>';
+      h+='<button class="act act-cal" data-id="'+r.id+'" title="В календарь">📅</button>'+
+        '<button class="act act-edit" data-id="'+r.id+'">✎ Изменить</button>'+
+        '<button class="act act-del" data-id="'+r.id+'">Удалить</button></div>';
+      el.innerHTML=h;box.appendChild(el);
+    });
+    const q=s=>box.querySelectorAll(s);
+    q('.act-work').forEach(b=>b.addEventListener('click',()=>{const r=byId(b.dataset.id);
+      if(!r.works||!r.works.length)r.works=[{d:'',p:0}];if(!r.exps)r.exps=[];r.status='work';renderAll();saveDB();}));
+    q('.act-done').forEach(b=>b.addEventListener('click',()=>{const r=byId(b.dataset.id);const now=new Date();
+      r.status='done';r.doneDate=isoOf(now);r.doneTime=p2(now.getHours())+':'+p2(now.getMinutes());renderAll();saveDB();}));
+    q('.act-cal').forEach(b=>b.addEventListener('click',()=>toICS(byId(b.dataset.id))));
+    q('.act-edit').forEach(b=>b.addEventListener('click',()=>startEdit(byId(b.dataset.id))));
+    q('.act-del').forEach(b=>b.addEventListener('click',()=>{
+      if(confirm('Удалить запись?')){recs=recs.filter(x=>String(x.id)!==String(b.dataset.id));renderAll();saveDB();}}));
+    q('.waddw').forEach(b=>b.addEventListener('click',()=>{byId(b.dataset.id).works.push({d:'',p:0});renderQueue();}));
+    q('.wadde').forEach(b=>b.addEventListener('click',()=>{byId(b.dataset.id).exps.push({d:'',a:0});renderQueue();}));
+    q('.wdel').forEach(b=>b.addEventListener('click',()=>{byId(b.dataset.id).works.splice(+b.dataset.i,1);renderQueue();saveDB();}));
+    q('.edel').forEach(b=>b.addEventListener('click',()=>{byId(b.dataset.id).exps.splice(+b.dataset.i,1);renderQueue();saveDB();}));
+    const upd=(id)=>{const r=byId(id);const el=box.querySelector('.wb-sum[data-id="'+id+'"]');
+      if(el)el.textContent='Доход '+rub(worksSum(r))+' · Расход '+rub(expsSum(r))+' · Прибыль '+rub(worksSum(r)-expsSum(r));};
+    q('.wd').forEach(i=>i.addEventListener('input',()=>{byId(i.dataset.id).works[+i.dataset.i].d=i.value;saveDB();}));
+    q('.wp').forEach(i=>i.addEventListener('input',()=>{byId(i.dataset.id).works[+i.dataset.i].p=parseFloat(i.value)||0;upd(i.dataset.id);saveDB();}));
+    q('.ed').forEach(i=>i.addEventListener('input',()=>{byId(i.dataset.id).exps[+i.dataset.i].d=i.value;saveDB();}));
+    q('.ea').forEach(i=>i.addEventListener('input',()=>{byId(i.dataset.id).exps[+i.dataset.i].a=parseFloat(i.value)||0;upd(i.dataset.id);saveDB();}));
+  }
+
+  function renderBase(){
+    const box=$('baseList');const qy=($('baseSearch').value||'').trim().toLowerCase();
+    let list=recs.filter(r=>r.status==='done');
+    if(qy)list=list.filter(r=>((r.brand||'')+' '+(r.model||'')+' '+(r.plate||'')+' '+(r.vin||'')).toLowerCase().includes(qy));
+    list.sort((a,b)=>((b.date||'')+(b.time||'')).localeCompare((a.date||'')+(a.time||'')));
+    $('baseCount').textContent=recs.filter(r=>r.status==='done').length;
+    if(!list.length){box.innerHTML='<div class="empty">'+(qy?'Ничего не найдено.':'Пока нет выполненных работ.')+'</div>';return;}
+    box.innerHTML='';
+    list.forEach(r=>{
+      const row=document.createElement('div');row.className='base-row'+(onWarranty(r)?' warranty':' done-ok');
+      const inc=incomeOf(r),exp=expenseOf(r);
+      let det='<div class="dd-row"><span>Авто</span><b>'+(esc(car(r))||'—')+'</b></div>';
+      if(r.owner)det+='<div class="dd-row"><span>Владелец</span><b>'+esc(r.owner)+'</b></div>';
+      det+='<div class="dd-row"><span>Гос. номер</span><b>'+(esc(r.plate)||'—')+'</b></div>';
+      if(r.vin)det+='<div class="dd-row"><span>VIN</span><b>'+esc(r.vin)+'</b></div>';
+      det+='<div class="dd-row"><span>Тип работ</span><b>'+(TYPES[r.type]||'—')+'</b></div>';
+      if(r.type==='chip'){const sp=chipSpecs(r);if(sp)det+='<div class="dd-block"><b>Чип:</b> '+esc(sp)+'</div>';}
+      det+='<div class="dd-row"><span>Обращение</span><b>'+fmtDate(r.date)+(r.time?' '+r.time:'')+'</b></div>';
+      (r.works||[]).filter(w=>w.d||w.p).forEach(w=>det+='<div class="dd-row"><span>'+(esc(w.d)||'Работа')+'</span><b class="inc">'+rub(w.p)+'</b></div>');
+      (r.exps||[]).filter(e=>e.d||e.a).forEach(e=>det+='<div class="dd-row"><span>'+(esc(e.d)||'Расход')+'</span><b class="exp">−'+rub(e.a)+'</b></div>');
+      det+='<div class="dd-row"><span>Доход</span><b class="inc">'+rub(inc)+'</b></div>';
+      det+='<div class="dd-row"><span>Расход</span><b class="exp">'+rub(exp)+'</b></div>';
+      det+='<div class="dd-row"><span>Прибыль</span><b class="pro">'+rub(inc-exp)+'</b></div>';
+      if(r.doneDate)det+='<div class="dd-row"><span>Выполнено</span><b>'+fmtDate(r.doneDate)+(r.doneTime?' '+r.doneTime:'')+'</b></div>';
+      if(r.type==='chip'){const w=warrantyEndDT(r);if(w)det+='<div class="dd-row"><span>Гарантия до</span><b class="'+(onWarranty(r)?'exp':'inc')+'">'+fmtDT(w)+(onWarranty(r)?' · на гарантии':'')+'</b></div>';}
+      if(r.prepNeeded&&r.prepInfo)det+='<div class="dd-block"><b>Подготовка:</b> '+esc(r.prepInfo)+'</div>';
+      det+='<div class="base-actions"><button class="base-edit baseedit">✎ Изменить</button><button class="btn-new newrec">↻ Записать заново</button></div>';
+      row.innerHTML='<div class="base-sum"><span class="base-date">'+fmtDate(r.date)+'</span>'+
+        '<span class="base-car">'+(esc(car(r))||'Авто')+(r.plate?' <span class="pl">'+esc(r.plate)+'</span>':'')+(r.vin?'<br><span class="base-vin">VIN: '+esc(r.vin)+'</span>':'')+'</span>'+
+        '<span class="tbadge '+r.type+'">'+TYPES[r.type]+'</span>'+
+        '<span class="base-chev">›</span></div><div class="base-detail">'+det+'</div>';
+      row.querySelector('.base-sum').addEventListener('click',()=>row.classList.toggle('open'));
+      const nb=row.querySelector('.newrec');if(nb)nb.addEventListener('click',e=>{e.stopPropagation();newFromRecord(r);});
+      const eb=row.querySelector('.baseedit');if(eb)eb.addEventListener('click',e=>{e.stopPropagation();startEdit(r);});
+      box.appendChild(row);
+    });
+  }
+
+  function renderWeek(){
+    const wk=$('week');wk.innerHTML='';const end=new Date(weekStart);end.setDate(end.getDate()+6);
+    $('weekTitle').textContent=weekStart.getDate()+' – '+end.getDate()+' '+MG[end.getMonth()];
+    for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(d.getDate()+i);const iso=isoOf(d);
+      const cell=document.createElement('div');cell.className='wday';
+      if(iso===todayISO)cell.classList.add('today');if(iso===selected)cell.classList.add('sel');
+      const dayR=recs.filter(r=>r.date===iso);let dots='';
+      dayR.slice(0,4).forEach(r=>dots+='<span class="dot-s" style="background:'+(SCOL[r.status]||'#888')+'"></span>');
+      cell.innerHTML='<div class="dn">'+DOW[i]+'</div><div class="dd">'+d.getDate()+'</div><div class="dots">'+dots+'</div>';
+      cell.addEventListener('click',()=>{selected=iso;$('date').value=iso;updateDue();renderWeek();renderDayList();});
+      wk.appendChild(cell);}
+  }
+  function renderDayList(){
+    const box=$('dayList');const list=recs.filter(r=>r.date===selected).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+    if(!list.length){box.innerHTML='<div class="day-empty">'+fmtDate(selected)+': записей нет.</div>';return;}
+    box.innerHTML='<div class="day-empty" style="padding-bottom:4px">Записи на '+fmtDate(selected)+':</div>'+
+      list.map(r=>'<div class="dl-item"><span class="dl-time">'+(r.time||'—')+'</span>'+
+        '<span style="flex:1">'+esc(car(r)||'Авто')+(r.plate?' · '+esc(r.plate):'')+'</span>'+
+        '<span class="tbadge '+r.type+'">'+TYPES[r.type]+'</span></div>').join('');
+  }
+
+  function renderAll(){renderAlerts();renderWeek();renderDayList();renderQueue();renderMonth();renderBase();}
+
+  // .ics календарь (iPhone)
+  function toICS(r){
+    if(!r.date){alert('У записи нет даты.');return;}
+    const t=r.time||'10:00';const[y,mo,d]=r.date.split('-').map(Number);const[h,mi]=t.split(':').map(Number);
+    const start=new Date(y,mo-1,d,h,mi),end=new Date(start.getTime()+60*60000);
+    const loc=dt=>dt.getFullYear()+p2(dt.getMonth()+1)+p2(dt.getDate())+'T'+p2(dt.getHours())+p2(dt.getMinutes())+'00';
+    const utc=dt=>dt.getUTCFullYear()+p2(dt.getUTCMonth()+1)+p2(dt.getUTCDate())+'T'+p2(dt.getUTCHours())+p2(dt.getUTCMinutes())+p2(dt.getUTCSeconds())+'Z';
+    const ie=s=>String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+    const sum=(car(r)||'Авто')+(r.plate?' '+r.plate:'');
+    const desc=(r.vin?'VIN: '+r.vin+'\n':'')+(r.prepNeeded&&r.prepInfo?'Подготовка: '+r.prepInfo:'');
+    const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ChipTuningGarage//RU','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+      'UID:'+(r.id||Date.now())+'@chiptuninggarage','DTSTAMP:'+utc(new Date()),'DTSTART:'+loc(start),'DTEND:'+loc(end),
+      'SUMMARY:'+ie(sum),'DESCRIPTION:'+ie(desc),
+      'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:'+ie(sum),'END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+    const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='zapis.ics';document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},200);
+  }
+
+  // редактирование
+  function startEdit(r){
+    editingId=r.id;
+    $('date').value=r.date||todayISO;$('time').value=r.time||'';
+    $('brand').value=r.brand||'';$('model').value=r.model||'';$('plate').value=r.plate||'';$('vin').value=r.vin||'';
+    $('owner').value=r.owner||'';
+    prepNeeded=!!r.prepNeeded;
+    document.querySelectorAll('#prepSeg button').forEach(x=>x.classList.toggle('on',x.dataset.p===(prepNeeded?'yes':'no')));
+    $('prepBlock').style.display=prepNeeded?'block':'none';$('prepInfo').value=r.prepInfo||'';
+    curType=r.type||'chip';
+    document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.toggle('on',x.dataset.t===curType));
+    $('chipBlock').style.display=curType==='chip'?'block':'none';
+    $('ecu').value=r.ecu||'';$('engvol').value=r.engvol||'';$('power').value=r.power||'';$('fuel').value=r.fuel||'Бензин';
+    updateDue();
+    $('formTitle').textContent='Редактирование записи';
+    $('editNote').style.display='block';$('editNote').textContent='Меняешь запись: '+(car(r)||'авто')+(r.plate?' '+r.plate:'')+'. Можно перенести дату/время.';
+    $('addBtn').textContent='Сохранить изменения';$('cancelEdit').style.display='block';
+    window.scrollTo({top:document.querySelector('#formTitle').getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});
+  }
+  function clearForm(){['brand','model','plate','vin','owner','time','prepInfo','ecu','engvol','power'].forEach(id=>$(id).value='');
+    $('date').value=todayISO;$('fuel').value='Бензин';
+    document.querySelectorAll('#prepSeg button').forEach(x=>x.classList.toggle('on',x.dataset.p==='no'));
+    prepNeeded=false;$('prepBlock').style.display='none';
+    curType='chip';document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.toggle('on',x.dataset.t==='chip'));
+    $('chipBlock').style.display='block';updateDue();}
+  function newFromRecord(r){
+    exitEdit();
+    $('brand').value=r.brand||'';$('model').value=r.model||'';$('plate').value=r.plate||'';$('vin').value=r.vin||'';
+    $('owner').value=r.owner||'';
+    curType=r.type||'chip';
+    document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.toggle('on',x.dataset.t===curType));
+    $('chipBlock').style.display=curType==='chip'?'block':'none';
+    $('ecu').value=r.ecu||'';$('engvol').value=r.engvol||'';$('power').value=r.power||'';$('fuel').value=r.fuel||'Бензин';
+    $('date').value=todayISO;$('time').value='';$('prepInfo').value='';
+    document.querySelectorAll('#prepSeg button').forEach(x=>x.classList.toggle('on',x.dataset.p==='no'));
+    prepNeeded=false;$('prepBlock').style.display='none';updateDue();
+    window.scrollTo({top:document.querySelector('#formTitle').getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'});
+  }
+  function exitEdit(){editingId=null;$('formTitle').textContent='Новая запись';$('editNote').style.display='none';
+    $('addBtn').textContent='+ Добавить в очередь';$('cancelEdit').style.display='none';}
+  $('cancelEdit').addEventListener('click',()=>{exitEdit();clearForm();});
+
+  $('prevMo').addEventListener('click',()=>{moM--;if(moM<0){moM=11;moY--;}renderMonth();});
+  $('nextMo').addEventListener('click',()=>{moM++;if(moM>11){moM=0;moY++;}renderMonth();});
+  $('prevW').addEventListener('click',()=>{weekStart.setDate(weekStart.getDate()-7);renderWeek();});
+  $('nextW').addEventListener('click',()=>{weekStart.setDate(weekStart.getDate()+7);renderWeek();});
+
+  document.querySelectorAll('#prepSeg button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#prepSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    prepNeeded=b.dataset.p==='yes';$('prepBlock').style.display=prepNeeded?'block':'none';}));
+
+  document.querySelectorAll('#typeSeg button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    curType=b.dataset.t;$('chipBlock').style.display=curType==='chip'?'block':'none';updateDue();}));
+
+  $('baseSearch').addEventListener('input',renderBase);
+  $('date').addEventListener('input',()=>{updateDue();if($('date').value){selected=$('date').value;
+    weekStart=mondayOf(new Date(selected+'T00:00:00'));renderWeek();renderDayList();}});
+  $('chipBlock').style.display='block';
+
+  $('plate').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
+  $('vin').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase());
+  $('date').value=todayISO;
 
   $('addBtn').addEventListener('click',()=>{
-    const num=$('num').value.trim();
-    if(!num){$('num').classList.add('err');$('num').focus();setTimeout(()=>$('num').classList.remove('err'),1200);return;}
-    const works=[];
-    worksForm.querySelectorAll('.work-row').forEach(r=>{const d=r.querySelector('.wd').value.trim();
-      const p=parseFloat(r.querySelector('.wp').value)||0;if(d||p)works.push({d:d,p:p});});
-    const rec={num:num,date:$('date').value,type:curType,brand:$('brand').value.trim(),model:$('model').value.trim(),
-      phone:$('phone').value.trim(),works:works,expense:parseFloat($('expense').value)||0};
-    if(curType==='chip'){rec.ecu=$('ecu').value.trim();rec.engvol=$('engvol').value.trim();
-      rec.power=$('power').value.trim();rec.fuel=$('fuel').value;rec.due=addDays($('date').value,15);}
-    records.unshift(rec);
-    // сброс формы
-    ['num','brand','model','phone','expense','ecu','engvol','power'].forEach(id=>$(id).value='');
-    $('fuel').value='Бензин';worksForm.innerHTML='';addWorkRow();$('num').focus();
-    render();renderMonths();saveDB();
+    const date=$('date').value;
+    if(!date){$('date').classList.add('err');setTimeout(()=>$('date').classList.remove('err'),1200);alert('Укажи дату обращения.');return;}
+    const data={date:date,time:$('time').value,brand:$('brand').value.trim(),model:$('model').value.trim(),
+      owner:$('owner').value.trim(),plate:$('plate').value.trim(),vin:$('vin').value.trim(),type:curType,prepNeeded:prepNeeded,
+      prepInfo:prepNeeded?$('prepInfo').value.trim():'',
+      ecu:curType==='chip'?$('ecu').value.trim():'',engvol:curType==='chip'?$('engvol').value.trim():'',
+      power:curType==='chip'?$('power').value.trim():'',fuel:curType==='chip'?$('fuel').value:''};
+    if(editingId){const r=byId(editingId);for(const k in data)r[k]=data[k];exitEdit();}
+    else{recs.push(Object.assign({id:Date.now(),status:'queue',works:[],exps:[]},data));}
+    clearForm();renderAll();saveDB();
   });
 
-  $('search').addEventListener('input',render);
+  $('expBtn').addEventListener('click',async()=>{const data=JSON.stringify(recs);$('bkText').value=data;
+    try{await navigator.clipboard.writeText(data);alert('Бэкап скопирован.');}
+    catch(e){$('bkText').focus();$('bkText').select();alert('Бэкап в поле ниже — выдели и скопируй.');}});
+  $('impBtn').addEventListener('click',()=>{const t=$('bkText').value.trim();if(!t){alert('Вставь бэкап в поле ниже.');return;}
+    let arr;try{arr=JSON.parse(t);}catch(e){alert('Не похоже на бэкап.');return;}
+    if(!Array.isArray(arr)){alert('Не похоже на бэкап.');return;}
+    if(!confirm('Загрузить '+arr.length+' записей? Текущие будут заменены.'))return;
+    recs=normalize(arr);renderAll();saveDB();alert('Загружено: '+arr.length);});
 
-  // бэкап
-  $('expBtn').addEventListener('click',async()=>{const data=JSON.stringify(records);$('bkText').value=data;
-    try{await navigator.clipboard.writeText(data);alert('Бэкап скопирован. Сохрани его в Заметках или отправь себе.');}
-    catch(e){$('bkText').focus();$('bkText').select();alert('Бэкап в поле ниже — выдели и скопируй вручную.');}});
-  $('impBtn').addEventListener('click',()=>{const t=$('bkText').value.trim();if(!t){alert('Вставь текст бэкапа в поле ниже.');return;}
-    let arr;try{arr=JSON.parse(t);}catch(e){alert('Не похоже на бэкап — проверь текст.');return;}
-    if(!Array.isArray(arr)){alert('Не похоже на бэкап — проверь текст.');return;}
-    if(!confirm('Загрузить '+arr.length+' записей? Текущая база будет заменена.'))return;
-    records=normalize(arr);render();renderMonths();saveDB();alert('База загружена: '+arr.length+' записей.');});
-
-  updateDue();
-  (async()=>{records=await loadDB();render();renderMonths();})();
+  (async()=>{recs=await loadDB();renderAll();updateDue();})();
 })();
 </script>
 </body>
